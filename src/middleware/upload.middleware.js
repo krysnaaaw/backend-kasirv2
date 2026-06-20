@@ -2,9 +2,18 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const uploadDir = path.join(__dirname, '..', '..', 'uploads');
+// Cek environment: kalau di Vercel pakai /tmp/uploads, kalau di laptop pakai folder bawaan
+const uploadDir = process.env.NODE_ENV === 'production' 
+  ? '/tmp/uploads' 
+  : path.join(__dirname, '..', '..', 'uploads');
+
+// Buat folder dengan penanganan error yang aman buat Vercel
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  } catch (error) {
+    console.warn('Lewati pembuatan folder di Vercel:', error.message);
+  }
 }
 
 const storage = multer.diskStorage({
