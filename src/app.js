@@ -75,15 +75,16 @@ app.use((err, req, res, next) => {
 // ============================================
 // START SERVER
 // ============================================
-const startServer = async () => {
-  await testConnection();
-  app.listen(PORT, () => {
-    console.log(`\n🚀 POS Klasik Server running on http://localhost:${PORT}`);
-    console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📁 Uploads: ${path.join(__dirname, '..', 'uploads')}\n`);
-  });
-};
+// Kita kasih syarat, kalau bukan di produksi (Vercel), baru jalanin app.listen
+if (process.env.NODE_ENV !== 'production') {
+  const startServer = async () => {
+    await testConnection();
+    app.listen(PORT, () => {
+      console.log(`\n🚀 POS Klasik Server running on http://localhost:${PORT}`);
+    });
+  };
+  startServer();
+}
 
-startServer();
-
+// Ini WAJIB ada biar Vercel bisa ngebaca Express kamu
 module.exports = app;
